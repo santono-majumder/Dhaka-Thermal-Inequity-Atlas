@@ -106,7 +106,7 @@ Dhaka-Thermal-Inequity-Atlas/
 ### Prerequisites
 - Google Earth Engine access: https://earthengine.google.com/signup
 - Google Colab: https://colab.research.google.com
-- QGIS 3.x or later: https://qgis.org/en/site/forusers/download.html
+- QGIS 4.0.2.: https://qgis.org/en/site/forusers/download.html
 
 ### Step 1 — Run GEE Scripts
 1. Go to https://code.earthengine.google.com
