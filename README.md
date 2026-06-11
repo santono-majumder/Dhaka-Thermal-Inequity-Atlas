@@ -216,7 +216,7 @@ Available at: https://github.com/santono-majumder/Dhaka-Thermal-Inequity-Atlas
 ## Author
 
 Santono Majumder,
-Department of Urban and Regional Planning
+Department of Urban and Regional Planning,
 Khulna University of Engineering and Technology-KUET, Bangladesh
 
 ---
