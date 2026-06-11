@@ -1,184 +1,201 @@
 # Dhaka Urban Surface Thermal Inequity Atlas
 
-**Ward-level surface heat island analysis, thermal equity scoring, and 
-cooling priority mapping for Dhaka City Corporation, Bangladesh 
-(93 wards, 2016–2024)**
+Ward-level surface heat island mapping, thermal equity scoring, and cooling
+priority analysis for Dhaka City Corporation, Bangladesh (93 wards, 2016–2024)
 
 ---
 
-## Overview
+## About This Project
 
-This repository contains all code, data, and maps for the study:
+Dhaka is one of the most densely populated and thermally stressed cities in
+South Asia, yet no ward-level study had previously examined which specific
+wards face the worst combination of surface heat, informal settlement density,
+and green space loss — until this one.
 
-> **"Urban Surface Thermal Inequity Atlas and Cooling Priority Mapping 
-> for Dhaka City Corporation, Bangladesh"**
+This project maps surface Heat Island Intensity across all 93 wards of Dhaka
+City Corporation using Landsat satellite data, builds a Thermal Equity Score
+that combines heat, informality, and green deficit into a single ward-level
+burden index, and produces a Cooling Priority map that identifies exactly
+where tree-planting investment will benefit the most people.
 
-This is the first ward-level thermal equity analysis conducted for any 
-Bangladeshi city. It identifies which of Dhaka's 93 wards face the highest 
-compound burden of surface heat, informal built-up density, and green space 
-deficit — and ranks every ward by where green infrastructure investment will 
-produce the maximum cooling impact for the most vulnerable populations.
+All analysis runs entirely on free tools — Google Earth Engine, Google Colab,
+and QGIS — with no paid software or local computing requirements.
 
 ---
 
 ## Research Question
 
-Which wards of Dhaka City Corporation face the highest combined burden of 
-surface heat intensity, informal settlement density, and green space deficit — 
-and where should cooling investments be directed to achieve the greatest 
-benefit for the most vulnerable populations?
+Which wards of Dhaka City Corporation carry the greatest combined burden of
+surface heat intensity, informal built-up density, and green space deficit —
+and where should cooling investments go to reach the most thermally
+vulnerable residents?
 
 ---
 
 ## Study Area
 
-Dhaka City Corporation, Bangladesh — 93 wards representing the pre-2016 DCC 
-administrative boundary (GADM Level 4 via geoBoundaries ADM4 dataset). 
-Ward numbers 1–92 and Ward 98 (Dhaka Cantonment).
+Dhaka City Corporation, Bangladesh. The study covers 93 wards based on the
+pre-2016 DCC administrative boundary derived from the GADM Level 4 dataset
+via the geoBoundaries ADM4 source. Ward numbers run from 1 to 92, plus
+Ward 98 covering the Dhaka Cantonment area.
+
+The 36 peripheral wards added to DNCC in the 2016 boundary expansion are
+not included, as ward-level spatial data for those areas is not available in
+any public geospatial database. These are newer peri-urban areas that carry
+lower thermal burden than the established inner-city wards studied here.
 
 ---
 
 ## Data Sources
 
-| Dataset | Source | Year | Resolution | Use in Study |
+| Dataset | Source | Year | Resolution | Purpose |
 |---|---|---|---|---|
-| Landsat 8/9 Band ST_B10 | Google Earth Engine (NASA/USGS) | 2016, 2024 | 30 m | Surface temperature → HII |
-| Sentinel-2 (B8, B4) | Google Earth Engine (ESA/Copernicus) | 2023–2024 | 10 m | NDVI green fraction per ward |
-| GHSL BUILT-S | Google Earth Engine (JRC/EC) | 2020 | 100 m | Informal built-up surface proxy |
-| WorldPop Bangladesh | WorldPop / Google Earth Engine | 2020 | 100 m | Population count per ward |
-| dhaka_wards_final.shp | geoBoundaries ADM4 (QGIS spatial clip) | 2016 boundary | Vector | Ward spatial aggregation unit |
+| Landsat 8 and 9, Band ST_B10 | NASA and USGS via Google Earth Engine | 2016 and 2024 | 30 m | Surface temperature, Heat Island Intensity |
+| Sentinel-2, Bands B8 and B4 | ESA Copernicus via Google Earth Engine | 2023 to 2024 | 10 m | NDVI green cover fraction per ward |
+| GHSL BUILT-S | JRC and European Commission via GEE | 2020 | 100 m | Informal built-up surface proxy |
+| WorldPop Bangladesh | WorldPop via Google Earth Engine | 2020 | 100 m | Population count per ward |
+| dhaka_wards_final.shp | geoBoundaries ADM4, clipped and dissolved in QGIS | 2016 boundary | Vector | Ward spatial unit for all aggregations |
 
 ---
 
-## Methods Summary
+## How It Works
 
-**Phase 1 — Heat Island Intensity (GEE)**
-Landsat 8/9 ST_B10 converted to Celsius (scale factor: 0.00341802, 
-offset: −124.15). Cool reference zone = Sentinel-2 pixels with NDVI > 0.40 
-within a 15 km buffer outside the ward boundary. 
-HII = ward pixel temperature − mean reference zone temperature.
+**Heat Island Intensity**
+Each Landsat scene was converted from raw digital number to degrees Celsius
+using the standard scale factor of 0.00341802 and offset of negative 124.15.
+A cool reference zone was defined as all Sentinel-2 pixels with NDVI above
+0.40 within a 15 km buffer around the ward boundary. Heat Island Intensity
+for each ward equals the ward mean temperature minus the mean temperature
+of that reference zone.
 
-**Phase 2 — Thermal Equity Score (Python)**
-Three-input additive index: (HII rank + informal rank + green deficit rank) / 3.  
-Validated across three weighting scenarios:  
-- Scenario A: equal weights (0.33, 0.33, 0.33)  
-- Scenario B: heat-heavy (0.50, 0.25, 0.25)  
-- Scenario C: social-heavy (0.25, 0.50, 0.25)  
+**Thermal Equity Score**
+Three ward-level indicators were min-max normalised, converted to 0-to-1
+ranks, and averaged with equal weight:
+Heat Island Intensity rank + informal built-up rank + green deficit rank,
+divided by 3. The result was validated against two alternative weighting
+scenarios to confirm it is not sensitive to arbitrary weight choices.
 
-**Phase 3 — Cooling Priority Score (Python)**
-(HII rank + green deficit rank + population rank) / 3, classified into 
-five tiers (Very High → Very Low) by percentile cutoff.
+**Cooling Priority Score**
+Each ward was ranked by its combined score of heat intensity, green deficit,
+and population size, then classified into five tiers from Very High to Very Low.
+This answers where tree planting produces the most cooling for the most people.
 
-**Phase 4 — Healthcare Urgency Flag (Python)**
-Wards ranking in the top 25 for equity burden AND located farther than 
-the city-average distance from major Dhaka healthcare facilities.
+**Healthcare Urgency Flag**
+Wards that rank in the top 25 for equity burden and also sit farther from
+a major hospital than the city average were flagged as Most Urgent. These
+wards face compounded vulnerability that requires both environmental and
+health planning responses.
 
-**Phase 5 — Validation**
-Spearman rank correlation between informal built-up density and 
-Thermal Equity Score: ρ = 0.493, p < 0.001 (n = 93).
+**Statistical Validation**
+Spearman rank correlation between ward-level informal built-up density and
+the Thermal Equity Score returned rho of 0.493 with p less than 0.001,
+confirming the index captures a real structural pattern, not a random one.
 
 ---
 
 ## Repository Structure
 
-Dhaka-Thermal-Inequity-Atlas/
-├── README.md
-├── LICENSE
-├── gee_scripts/
-│   ├── 01_HII_Computation.js          # Landsat HII for 2016 and 2024
-│   ├── 02_Heat_Change_Map.js          # Heat change raster (2024 − 2016)
-│   └── 03_Ward_CSV_Export.js          # Ward-level CSV export (93 rows)
-├── python_analysis/
-│   └── Project2_Thermal_Equity_Analysis.ipynb
-├── data/
-│   ├── ward_data.csv                  # Raw GEE export (93 wards, 6 columns)
-│   ├── ward_final_rankings.csv        # Complete ranked results, all 93 wards
-│   └── ward_top25.csv                 # Top 25 most equity-burdened wards
-└── maps/
-├── Map1_HII_2024.png              # Surface HII raster map
-├── Map2_ThermalEquityScore.png    # Thermal Equity Burden choropleth
-└── Map3_CoolingPriority.png       # Cooling Priority + Healthcare Urgency
+**GEE_Scripts/**
+- 01_HII_Computation.js — Landsat HII computation for 2016 and 2024
+- 02_Heat_Change_Map.js — Heat change raster, 2024 minus 2016
+- 03_Ward_CSV_Export.js — Ward-level CSV export, 93 rows
+
+**Python Notebook/**
+- Project2_Thermal_Equity_Analysis.ipynb — Complete equity analysis pipeline
+
+**Data/**
+- ward_data.csv — Raw GEE export, 93 wards, 6 columns
+- ward_final_rankings.csv — Full ranked results for all 93 wards
+- ward_top25.csv — Top 25 most equity-burdened wards only
+
+**Maps/**
+- Map1_HII_2024.png — Surface Heat Island Intensity raster map
+- Map2_ThermalEquityScore.png — Thermal Equity Burden choropleth map
+- Map3_CoolingPriority.png — Cooling Priority and Healthcare Urgency map
 
 ---
 
-## How to Reproduce
+## How to Reproduce This Study
 
-### Prerequisites
-- Google Earth Engine access: https://earthengine.google.com/signup
-- Google Colab: https://colab.research.google.com
-- QGIS 4.0.2.: https://qgis.org/en/site/forusers/download.html
+**What you need**
+- A Google account with Earth Engine approval: https://earthengine.google.com/signup
+- Google Colab, free in any browser: https://colab.research.google.com
+- QGIS 4.0.2 or later: https://qgis.org/en/site/forusers/download.html
 
-### Step 1 — Run GEE Scripts
-1. Go to https://code.earthengine.google.com
-2. Upload `dhaka_wards_final.shp` as a GEE Asset
-3. In each script, replace `YOUR_GEE_USERNAME` with your GEE username
-4. Run scripts in order: `01` → `02` → `03`
-5. Click RUN in the Tasks panel to export outputs to Google Drive
+**Step 1 — Run the GEE scripts**
+Open https://code.earthengine.google.com and upload dhaka_wards_final.shp
+as a GEE Asset. In each script, replace YOUR_GEE_USERNAME with your actual
+GEE username. Run the three scripts in order, 01 then 02 then 03.
+In the Tasks panel, click RUN next to each export task to send outputs
+to your Google Drive.
 
-### Step 2 — Run Python Analysis
-1. Open `Project2_Thermal_Equity_Analysis.ipynb` in Google Colab
-2. Upload `ward_data.csv` from your GEE export to the Colab session
-3. Run all cells in order: Runtime → Run All
-4. Download `ward_final_rankings.csv` and `ward_top25.csv` from the session
+**Step 2 — Run the Python analysis**
+Open the notebook in Google Colab. Upload ward_data.csv from your GEE
+export into the Colab session. Run all cells from top to bottom using
+Runtime and then Run All. Download ward_final_rankings.csv and
+ward_top25.csv from the session files panel when the notebook finishes.
 
-### Step 3 — Produce Maps in QGIS
-1. Load `dhaka_wards_final.shp` (ward boundaries)
-2. Join `ward_final_rankings.csv` to the shapefile on the `ward_num` field
-3. Load raster exports from GEE
-4. Apply symbology following the colour schemes described in the map files
+**Step 3 — Make the maps in QGIS**
+Load dhaka_wards_final.shp as a vector layer. Load ward_final_rankings.csv
+as a delimited text layer with no geometry. Join the CSV to the shapefile
+on the ward_num field. Load the two raster exports from GEE. Apply
+symbology following the colour descriptions in each map file name.
 
 ---
 
-## Key Findings
+## Key Results
 
-| Metric | Value |
-|---|---|
-| Citywide mean HII | 2.77°C above cool reference zone |
-| Ward-level HII range | 1.38°C – 4.89°C (spread: 3.51°C) |
-| Most equity-burdened ward | Ward No-74 (Score: 0.87, NDVI fraction: 0.013) |
-| Wards classified Very High cooling priority | 19 wards (~2.0M residents) |
-| Population in Very High or High priority zones | ~49.6% of 7.55M analyzed |
-| Wards with dual urgency (equity + healthcare) | 7 wards |
-| Spearman correlation (informality vs. equity score) | ρ = 0.493, p < 0.001 |
-| Sensitivity robustness | Confirmed across all 3 weighting scenarios |
+- Citywide mean Heat Island Intensity: 2.77 degrees Celsius above the cool reference zone
+- Ward-level HII range: 1.38 to 4.89 degrees Celsius, a spread of 3.51 degrees
+- Most equity-burdened ward: Ward No-74, Score 0.87, NDVI fraction 0.013
+- Top five equity-burdened wards: Ward 74, 60, 70, 65, and 71
+- Wards classified Very High cooling priority: 19 wards, roughly 2.0 million residents
+- Share of total population in Very High or High priority zones: 49.6 percent of 7.55 million
+- Wards with dual urgency (top equity burden plus poor healthcare access): 7 wards
+- Spearman correlation between informality and equity score: rho 0.493, p less than 0.001
+- Robustness: core findings confirmed across all three weighting scenarios
 
 ---
 
 ## Limitations
 
-1. The study covers 93 wards of the pre-2016 DCC administrative boundary. 
-   The 36 peripheral DNCC wards incorporated in 2016 are excluded due to 
-   the absence of ward-level spatial data in publicly available geospatial databases.
-2. Landsat ST_B10 measures land surface temperature, not ambient air temperature.
-3. GHSL BUILT-S serves as an informal settlement density proxy, 
-   not a verified slum boundary map.
-4. WorldPop 2020 is a modelled population estimate, not a census count.
-5. Healthcare distance is Euclidean (straight-line), not travel-time based.
+- The study covers 93 wards reflecting the pre-2016 DCC boundary. The 36
+  peripheral wards added in the 2016 DNCC expansion are excluded because
+  no ward-level spatial data exists for them in any public database.
+- Landsat surface temperature represents land surface conditions, not
+  the air temperature that people experience at ground level.
+- The GHSL BUILT-S dataset is used as a proxy for informal settlement
+  density. It is a satellite-derived estimate, not a ground-verified
+  slum boundary map.
+- WorldPop 2020 population figures are modelled estimates calibrated
+  to census data, not direct census counts.
+- Healthcare distances are measured as straight-line Euclidean distances
+  from ward centroids. Actual travel times would vary by road network
+  and transport access.
 
 ---
 
-## Citation
+## How to Cite
 
-If you use this code or data in your research, please cite:
+If you use any part of this code or data, please cite it as:
 
-> Majumder, S. (2024). *Dhaka Urban Surface Thermal Inequity Atlas: 
-> Ward-level surface heat island analysis and cooling priority mapping 
-> for Dhaka City Corporation, Bangladesh (93 wards, 2016–2024)*. 
-> Department of Urban and Regional Planning, Khulna University of 
-> Engineering and Technology (KUET), Bangladesh. 
-> GitHub: https://github.com/ShantonuMajumder/Dhaka-Thermal-Inequity-Atlas
+Majumder, S. (2024). Dhaka Urban Surface Thermal Inequity Atlas:
+Ward-level surface heat island analysis and cooling priority mapping
+for Dhaka City Corporation, Bangladesh. Department of Urban and Regional
+Planning, Khulna University of Engineering and Technology, Bangladesh.
+Available at: https://github.com/YOUR_USERNAME/Dhaka-Thermal-Inequity-Atlas
 
 ---
 
 ## Author
 
-**Santono Majumder**  
-Department of Urban and Regional Planning  
-Khulna University of Engineering and Technology (KUET), Khulna, Bangladesh
+Santono Majumder
+Department of Urban and Regional Planning
+Khulna University of Engineering and Technology (KUET), Bangladesh
 
 ---
 
 ## License
 
-This project is licensed under the MIT License.  
-See the [LICENSE](LICENSE) file for details.
+This project is released under the MIT License.
+See the LICENSE file in this repository for full terms.
