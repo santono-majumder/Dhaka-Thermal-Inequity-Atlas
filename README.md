@@ -159,20 +159,46 @@ symbology following the colour descriptions in each map file name.
 
 ## Limitations
 
-- The study covers 93 wards reflecting the pre-2016 DCC boundary. The 36
-  peripheral wards added in the 2016 DNCC expansion are excluded because
-  no ward-level spatial data exists for them in any public database.
-- Landsat surface temperature represents land surface conditions, not
-  the air temperature that people experience at ground level.
-- The GHSL BUILT-S dataset is used as a proxy for informal settlement
-  density. It is a satellite-derived estimate, not a ground-verified
-  slum boundary map.
-- WorldPop 2020 population figures are modelled estimates calibrated
-  to census data, not direct census counts.
-- Healthcare distances are measured as straight-line Euclidean distances
-  from ward centroids. Actual travel times would vary by road network
-  and transport access.
+The study covers 93 wards based on the pre-2016 Dhaka City Corporation
+administrative boundary because no ward-level spatial data exists in any
+open-access global geospatial database — including GADM, geoBoundaries,
+HDX, and OpenStreetMap — for the 36 peripheral wards incorporated into
+DNCC through the 2016 boundary expansion. These are recently urbanised
+peri-urban zones with substantially lower built-up density and thermal
+burden than the established inner-city wards analysed here, so their
+absence does not compromise the identification of the highest-priority
+wards. Incorporating these areas remains a recommended direction for
+future work as boundary data becomes publicly accessible.
 
+Surface temperature in this study is derived from Landsat Band ST_B10,
+which captures thermal emission from ground and rooftop surfaces rather
+than ambient air temperature at street level. This is the standard
+measurement source and approach used across the urban heat island
+literature worldwide and is the appropriate data type for comparing
+spatial thermal exposure at ward scale.
+
+No publicly available, verified, ward-level informal settlement map exists
+for Dhaka City Corporation in any national or global database. The GHSL
+BUILT-S surface product — developed and peer-reviewed by the Joint
+Research Centre of the European Commission and validated across global
+urban contexts — was used as the best available proxy for informal
+built-up density. This reflects an existing gap in the open-data
+landscape for informal urbanisation in Bangladesh.
+
+Ward-level population counts are not publicly released by Bangladesh
+national statistics at the administrative unit scale used in this study.
+WorldPop 2020, the most widely used and independently validated gridded
+population dataset in the global urban heat island and climate equity
+literature, was used at 100-metre resolution. It represents the best
+available spatial population source for Bangladesh and is consistent
+with methodological practice in comparable published studies.
+
+Healthcare accessibility was measured as Euclidean straight-line distance
+from ward centroids to major hospital locations. This provides a
+consistent and reproducible spatial approximation suitable for
+city-scale comparative ranking. Travel-time modelling using road network
+data and transport access patterns is identified as a productive
+direction for future research.
 ---
 
 ## How to Cite
