@@ -183,7 +183,7 @@ Majumder, S. (2024). Dhaka Urban Surface Thermal Inequity Atlas:
 Ward-level surface heat island analysis and cooling priority mapping
 for Dhaka City Corporation, Bangladesh. Department of Urban and Regional
 Planning, Khulna University of Engineering and Technology, Bangladesh.
-Available at: https://github.com/YOUR_USERNAME/Dhaka-Thermal-Inequity-Atlas
+Available at: https://github.com/santono-majumder/Dhaka-Thermal-Inequity-Atlas
 
 ---
 
